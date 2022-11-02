@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using RpnCalculator.Core.Exceptions;
+using RpnCalculator.Core.Operators;
 
 namespace RpnCalculator.Core;
 
@@ -9,8 +11,6 @@ public class Calculator
 {
     private Stack<Operand> _operandStack = new Stack<Operand>();
 
-    private List<OperateItem> _originData = new List<OperateItem>();
-
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -20,44 +20,77 @@ public class Calculator
 
     public string Evaluate(string input)
     {
-        _originData = input.Resolve();
+        var inputData = input.Resolve();
 
-        foreach (var item in _originData)
+        var breakable = false;
+
+        foreach (var item in inputData)
         {
-            if (item is Operand operand)
+            switch (item)
             {
-                _operandStack.Push(operand);
+                case Operand operand:
+                    _operandStack.Push(operand);
+                    break;
+                case Clear:
+                    _operandStack.Clear();
+                    breakable = true;
+                    break;
+                case Undo:
+
+                    break;
+                case OperatorBase @operator:
+                    EvaluateValue(@operator);
+                    break;
+            }
+
+            if (breakable)
+            {
+                break;
+            }
+        }
+
+        return this.ToString();
+    }
+
+    public override string ToString()
+    {
+        return string.Join(" ", _operandStack.Select(x => x.ToString()).Reverse());
+    }
+
+    private void EvaluateValue(OperatorBase @operator)
+    {
+        var currentList = new List<Operand>();
+
+        var operandCount = @operator.OperandCount;
+
+        while (operandCount > 0)
+        {
+            if (_operandStack.TryPop(out var topOperand))
+            {
+                currentList.Add(topOperand);
+
+                operandCount--;
             }
             else
             {
-                var @operator = item as OperatorBase;
-
-                var currentList = new List<Operand>();
-
-                var operandCount = @operator!.OperandCount;
-
-                while (operandCount > 0)
-                {
-                    currentList.Add(_operandStack.Pop());
-                    operandCount--;
-                }
-
-                var result = @operator.Evaluate(currentList);
-
-                _operandStack.Push(new Operand(result.ToString(CultureInfo.CurrentCulture)));
+                break;
             }
         }
 
-        var list = new List<decimal>();
-
-        while (_operandStack.Count > 0)
+        try
         {
-            var operand = _operandStack.Pop();
-            list.Add(operand.NumberValue);
+            var result = @operator.Evaluate(currentList);
+
+            _operandStack.Push(new Operand(result));
         }
+        catch (InsufficientException)
+        {
+            for (var i = currentList.Count - 1; i >= 0; i--)
+            {
+                _operandStack.Push(currentList[i]);
+            }
 
-        list.Reverse();
-
-        return string.Join(" ", list);
+            throw;
+        }
     }
 }

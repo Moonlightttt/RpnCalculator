@@ -9,6 +9,7 @@ public static class CalculatorExtension
     /// <returns></returns>
     public static List<OperateItem> Resolve(this string str)
     {
-        return str.Split(" ").Select(OperateItemFactory.GetInstance).ToList();
+        return str.Trim().Split(" ").Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(OperateItemFactory.GetInstance).ToList();
     }
 }

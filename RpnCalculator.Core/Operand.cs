@@ -10,10 +10,20 @@ public class Operand : OperateItem
     /// </summary>
     public decimal NumberValue { get; }
 
-    public Operand(string value) : base(value)
+    public Operand(string value)
     {
         NumberValue = decimal.TryParse(value, out var result)
             ? result
-            : throw new ArgumentException("unexpected string");
+            : throw new ArgumentException($"unexpected string: {value}");
+    }
+
+    public Operand(decimal value)
+    {
+        NumberValue = value;
+    }
+
+    public override string ToString()
+    {
+        return $"{NumberValue:0.##########}";
     }
 }
