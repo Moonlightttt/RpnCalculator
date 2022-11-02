@@ -12,10 +12,10 @@ public class OpSub : OperatorBase
     private OpSub(string value, int operandCount) : base(value, operandCount)
     {
     }
-    
-    
-    public override decimal Evaluate(params Operand[] operand)
+
+
+    public override decimal Evaluate(List<Operand> operands)
     {
-        throw new NotImplementedException();
+        return operands[1].NumberValue - operands[0].NumberValue;
     }
 }

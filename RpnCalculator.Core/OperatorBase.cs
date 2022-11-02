@@ -23,7 +23,7 @@ public abstract class OperatorBase : OperateItem
     /// <summary>
     /// 执行计算
     /// </summary>
-    /// <param name="operand"></param>
+    /// <param name="operands"></param>
     /// <returns></returns>
-    public abstract decimal Evaluate(params Operand[] operand);
+    public abstract decimal Evaluate(List<Operand> operands);
 }

@@ -14,8 +14,8 @@ public class OpMulti : OperatorBase
     }
     
     
-    public override decimal Evaluate(params Operand[] operand)
+    public override decimal Evaluate(List<Operand> operands)
     {
-        throw new NotImplementedException();
+        return operands[1].NumberValue * operands[0].NumberValue;
     }
 }
