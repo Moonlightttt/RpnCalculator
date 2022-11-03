@@ -3,7 +3,7 @@
 /// <summary>
 /// 乘法
 /// </summary>
-public class Multiplication : OperatorBase
+public class Multiplication : OperateSymbol
 {
     public Multiplication(string value, int position) : base(value, position)
     {
@@ -11,8 +11,8 @@ public class Multiplication : OperatorBase
     }
 
 
-    protected override decimal InternalEvaluate(List<Operand> operands)
+    protected override decimal InternalEvaluate(List<OperateNumber> operands)
     {
-        return operands[1].NumberValue * operands[0].NumberValue;
+        return operands[1].Value * operands[0].Value;
     }
 }

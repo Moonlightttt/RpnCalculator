@@ -3,15 +3,15 @@
 /// <summary>
 /// 加法
 /// </summary>
-public class Addition : OperatorBase
+public class Addition : OperateSymbol
 {
     public Addition(string value, int position) : base(value, position)
     {
         OperandCount = 2;
     }
 
-    protected override decimal InternalEvaluate(List<Operand> operands)
+    protected override decimal InternalEvaluate(List<OperateNumber> operands)
     {
-        return operands[1].NumberValue + operands[0].NumberValue;
+        return operands[1].Value + operands[0].Value;
     }
 }

@@ -3,7 +3,7 @@
 /// <summary>
 /// 减法
 /// </summary>
-public class Subtraction : OperatorBase
+public class Subtraction : OperateSymbol
 {
     public Subtraction(string value, int position) : base(value, position)
     {
@@ -11,8 +11,8 @@ public class Subtraction : OperatorBase
     }
 
 
-    protected override decimal InternalEvaluate(List<Operand> operands)
+    protected override decimal InternalEvaluate(List<OperateNumber> operands)
     {
-        return operands[1].NumberValue - operands[0].NumberValue;
+        return operands[1].Value - operands[0].Value;
     }
 }

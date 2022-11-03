@@ -1,4 +1,6 @@
-﻿namespace RpnCalculator.Core;
+﻿using RpnCalculator.Core.Commands;
+
+namespace RpnCalculator.Core;
 
 public static class CalculatorExtension
 {
@@ -7,9 +9,9 @@ public static class CalculatorExtension
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    public static List<OperateItem> Resolve(this string str)
+    public static List<ICommand> Resolve(this string str)
     {
         return str.Trim().Split(" ").Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select(OperateItemFactory.GetInstance).ToList();
+            .Select(CommandFactory.GetCommand).ToList();
     }
 }

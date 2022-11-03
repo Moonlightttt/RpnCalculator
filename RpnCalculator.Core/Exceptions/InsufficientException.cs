@@ -2,9 +2,9 @@
 
 public class InsufficientException : Exception
 {
-    private OperatorBase Operator { get; set; }
+    private OperateSymbol Operator { get; set; }
 
-    public InsufficientException(OperatorBase @operator)
+    public InsufficientException(OperateSymbol @operator)
     {
         Operator = @operator;
     }

@@ -5,10 +5,10 @@ namespace RpnCalculator.Core;
 /// <summary>
 /// 运算符基类
 /// </summary>
-public abstract class OperatorBase : OperateItem
+public abstract class OperateSymbol
 {
     /// <summary>
-    /// 原始数据
+    /// 运算符
     /// </summary>
     public string Value { get; }
 
@@ -27,18 +27,18 @@ public abstract class OperatorBase : OperateItem
     /// </summary>
     /// <param name="value"></param>
     /// <param name="position"></param>
-    protected OperatorBase(string value, int position)
+    protected OperateSymbol(string value, int position)
     {
         Value = value;
         Position = position;
     }
-
+    
     /// <summary>
     /// 执行计算
     /// </summary>
     /// <param name="operands"></param>
     /// <returns></returns>
-    public decimal Evaluate(List<Operand> operands)
+    public decimal Evaluate(List<OperateNumber> operands)
     {
         Validate(operands);
 
@@ -50,14 +50,14 @@ public abstract class OperatorBase : OperateItem
     /// </summary>
     /// <param name="operands"></param>
     /// <returns></returns>
-    protected abstract decimal InternalEvaluate(List<Operand> operands);
+    protected abstract decimal InternalEvaluate(List<OperateNumber> operands);
 
     /// <summary>
     /// 验证
     /// </summary>
     /// <param name="operands"></param>
     /// <returns></returns>
-    protected virtual void Validate(List<Operand> operands)
+    protected virtual void Validate(List<OperateNumber> operands)
     {
         if (operands.Count != OperandCount)
         {

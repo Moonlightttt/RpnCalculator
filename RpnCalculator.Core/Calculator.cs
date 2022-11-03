@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using RpnCalculator.Core.Commands;
 using RpnCalculator.Core.Exceptions;
 using RpnCalculator.Core.Operators;
 
@@ -9,7 +10,8 @@ namespace RpnCalculator.Core;
 /// </summary>
 public class Calculator
 {
-    private Stack<Operand> _operandStack = new Stack<Operand>();
+    private Stack<OperateNumber> _operandStack = new Stack<OperateNumber>();
+    private Stack<ICommand> _undoStack = new Stack<ICommand>();
 
     /// <summary>
     /// 构造函数
@@ -22,54 +24,41 @@ public class Calculator
     {
         var inputData = input.Resolve();
 
-        var breakable = false;
-
         foreach (var item in inputData)
         {
             switch (item)
             {
-                case Operand operand:
-                    _operandStack.Push(operand);
+                case NumberCommand number:
+                    _operandStack.Push(number);
+                    _undoStack.Push(number);
                     break;
-                case Clear:
+                case ClearCommand:
                     _operandStack.Clear();
-                    breakable = true;
+                    _undoStack.Clear();
                     break;
-                case Undo:
+                case UndoCommand:
 
                     break;
-                case OperatorBase @operator:
-                    EvaluateValue(@operator);
+                case IComputeCommand compute:
+                    compute.Execute(this);
                     break;
-            }
-
-            if (breakable)
-            {
-                break;
             }
         }
 
         return this.ToString();
     }
 
-    public override string ToString()
+    public void CommandExecute(int operateCount, Func<List<OperateNumber>, decimal> func)
     {
-        return string.Join(" ", _operandStack.Select(x => x.ToString()).Reverse());
-    }
+        var currentList = new List<OperateNumber>();
 
-    private void EvaluateValue(OperatorBase @operator)
-    {
-        var currentList = new List<Operand>();
-
-        var operandCount = @operator.OperandCount;
-
-        while (operandCount > 0)
+        while (operateCount > 0)
         {
             if (_operandStack.TryPop(out var topOperand))
             {
                 currentList.Add(topOperand);
 
-                operandCount--;
+                operateCount--;
             }
             else
             {
@@ -79,9 +68,9 @@ public class Calculator
 
         try
         {
-            var result = @operator.Evaluate(currentList);
+            var result = func(currentList);
 
-            _operandStack.Push(new Operand(result));
+            _operandStack.Push(new OperateNumber(result));
         }
         catch (InsufficientException)
         {
@@ -92,5 +81,10 @@ public class Calculator
 
             throw;
         }
+    }
+
+    public override string ToString()
+    {
+        return string.Join(" ", _operandStack.Select(x => x.ToString()).Reverse());
     }
 }

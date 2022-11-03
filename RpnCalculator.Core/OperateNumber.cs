@@ -3,27 +3,27 @@
 /// <summary>
 /// 操作数
 /// </summary>
-public class Operand : OperateItem
+public class OperateNumber
 {
     /// <summary>
     /// 数据值
     /// </summary>
-    public decimal NumberValue { get; }
+    public decimal Value { get; }
 
-    public Operand(string value)
+    public OperateNumber(string value)
     {
-        NumberValue = decimal.TryParse(value, out var result)
+        Value = decimal.TryParse(value, out var result)
             ? result
             : throw new ArgumentException($"unexpected string: {value}");
     }
 
-    public Operand(decimal value)
+    public OperateNumber(decimal value)
     {
-        NumberValue = value;
+        Value = value;
     }
 
     public override string ToString()
     {
-        return $"{NumberValue:0.##########}";
+        return $"{Value:0.##########}";
     }
 }
