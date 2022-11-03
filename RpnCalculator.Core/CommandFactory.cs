@@ -12,6 +12,7 @@ public static class CommandFactory
             "-" => new SubtractionCommand(str, position),
             "*" => new MultiplicationCommand(str, position),
             "/" => new DivisionCommand(str, position),
+            "sqrt" => new SqrtCommand(str, position),
             "undo" => new UndoCommand(),
             "clear" => new ClearCommand(),
             _ => new NumberCommand(str),
