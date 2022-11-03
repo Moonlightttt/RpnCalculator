@@ -1,31 +1,32 @@
-﻿using RpnCalculator.Core.Exceptions;
+﻿using RpnCalculator.Core.Commands;
+using RpnCalculator.Core.Exceptions;
 
 namespace RpnCalculator.Core;
 
 /// <summary>
 /// 运算符基类
 /// </summary>
-public abstract class OperateSymbol
+public abstract class OperateSymbol:IComputeCommand
 {
     /// <summary>
     /// 运算符
     /// </summary>
-    public string Value { get; }
+    private string Value { get; }
 
     /// <summary>
     /// 运算符所需操作数的个数
     /// </summary>
-    public int OperandCount { get; protected set; }
+    protected int OperandCount { get; set; }
 
     /// <summary>
     /// 运算符位置
     /// </summary>
-    public int Position { get; protected set; }
-    
+    public int Position { get; }
+
     /// <summary>
     /// 撤销记录
     /// </summary>
-    public List<OperateNumber> UndoList { get; set; }
+    private List<OperateNumber> UndoList { get; set; } = new();
 
     /// <summary>
     /// 构造函数
@@ -39,25 +40,25 @@ public abstract class OperateSymbol
     }
     
     /// <summary>
-    /// 执行计算
+    /// 通用计算逻辑
     /// </summary>
     /// <param name="operands"></param>
     /// <returns></returns>
-    protected decimal Evaluate(List<OperateNumber> operands)
+    private decimal CommonEvaluate(List<OperateNumber> operands)
     {
         Validate(operands);
         
         UndoList = operands;
 
-        return InternalEvaluate(operands);
+        return ImplementedEvaluate(operands);
     }
 
     /// <summary>
-    /// 执行计算
+    /// 计算实现
     /// </summary>
     /// <param name="operands"></param>
     /// <returns></returns>
-    protected abstract decimal InternalEvaluate(List<OperateNumber> operands);
+    protected abstract decimal ImplementedEvaluate(List<OperateNumber> operands);
 
     /// <summary>
     /// 验证
@@ -70,6 +71,24 @@ public abstract class OperateSymbol
         {
             throw new InsufficientException(this);
         }
+    }
+
+    /// <summary>
+    /// 执行命令
+    /// </summary>
+    /// <param name="calculator"></param>
+    public void Execute(Calculator calculator)
+    {
+        calculator.CommandExecute(this, OperandCount, CommonEvaluate);
+    }
+
+    /// <summary>
+    /// 执行撤销命令
+    /// </summary>
+    /// <param name="calculator"></param>
+    public void Undo(Calculator calculator)
+    {
+        calculator.Undo(UndoList);
     }
 
     public override string ToString()

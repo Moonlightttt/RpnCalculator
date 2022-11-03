@@ -10,7 +10,7 @@ public class OperateNumber
     /// </summary>
     public decimal Value { get; }
 
-    public OperateNumber(string value)
+    protected OperateNumber(string value)
     {
         Value = decimal.TryParse(value, out var result)
             ? result
