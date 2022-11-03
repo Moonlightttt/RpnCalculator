@@ -42,32 +42,32 @@ public abstract class OperateSymbol:IComputeCommand
     /// <summary>
     /// 通用计算逻辑
     /// </summary>
-    /// <param name="operands"></param>
+    /// <param name="numbers"></param>
     /// <returns></returns>
-    private decimal CommonEvaluate(List<OperateNumber> operands)
+    private decimal CommonEvaluate(List<OperateNumber> numbers)
     {
-        Validate(operands);
+        Validate(numbers);
         
-        UndoList = operands;
+        UndoList = numbers;
 
-        return ImplementedEvaluate(operands);
+        return ImplementedEvaluate(numbers);
     }
 
     /// <summary>
     /// 计算实现
     /// </summary>
-    /// <param name="operands"></param>
+    /// <param name="numbers"></param>
     /// <returns></returns>
-    protected abstract decimal ImplementedEvaluate(List<OperateNumber> operands);
+    protected abstract decimal ImplementedEvaluate(List<OperateNumber> numbers);
 
     /// <summary>
     /// 验证
     /// </summary>
-    /// <param name="operands"></param>
+    /// <param name="numbers"></param>
     /// <returns></returns>
-    protected virtual void Validate(List<OperateNumber> operands)
+    protected virtual void Validate(List<OperateNumber> numbers)
     {
-        if (operands.Count != OperandCount)
+        if (numbers.Count != OperandCount)
         {
             throw new InsufficientException(this);
         }
