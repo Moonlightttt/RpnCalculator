@@ -15,11 +15,11 @@ public class NumberCommand : OperateNumber, IComputeCommand
 
     public void Execute(Calculator calculator)
     {
-        throw new NotImplementedException();
+        calculator.SetNumber(this);
     }
 
     public void Undo(Calculator calculator)
     {
-        throw new NotImplementedException();
+        calculator.Undo(new List<OperateNumber> { });
     }
 }

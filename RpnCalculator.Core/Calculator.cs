@@ -1,7 +1,5 @@
-﻿using System.Globalization;
-using RpnCalculator.Core.Commands;
+﻿using RpnCalculator.Core.Commands;
 using RpnCalculator.Core.Exceptions;
-using RpnCalculator.Core.Operators;
 
 namespace RpnCalculator.Core;
 
@@ -11,7 +9,7 @@ namespace RpnCalculator.Core;
 public class Calculator
 {
     private Stack<OperateNumber> _operandStack = new Stack<OperateNumber>();
-    private Stack<ICommand> _undoStack = new Stack<ICommand>();
+    private Stack<IComputeCommand> _undoStack = new Stack<IComputeCommand>();
 
     /// <summary>
     /// 构造函数
@@ -24,31 +22,15 @@ public class Calculator
     {
         var inputData = input.Resolve();
 
-        foreach (var item in inputData)
+        foreach (var command in inputData)
         {
-            switch (item)
-            {
-                case NumberCommand number:
-                    _operandStack.Push(number);
-                    _undoStack.Push(number);
-                    break;
-                case ClearCommand:
-                    _operandStack.Clear();
-                    _undoStack.Clear();
-                    break;
-                case UndoCommand:
-
-                    break;
-                case IComputeCommand compute:
-                    compute.Execute(this);
-                    break;
-            }
+            command.Execute(this);
         }
 
         return this.ToString();
     }
 
-    public void CommandExecute(int operateCount, Func<List<OperateNumber>, decimal> func)
+    public void CommandExecute(IComputeCommand command, int operateCount, Func<List<OperateNumber>, decimal> func)
     {
         var currentList = new List<OperateNumber>();
 
@@ -71,6 +53,8 @@ public class Calculator
             var result = func(currentList);
 
             _operandStack.Push(new OperateNumber(result));
+
+            _undoStack.Push(command);
         }
         catch (InsufficientException)
         {
@@ -80,6 +64,36 @@ public class Calculator
             }
 
             throw;
+        }
+    }
+
+    public void SetNumber(NumberCommand number)
+    {
+        _operandStack.Push(number);
+        _undoStack.Push(number);
+    }
+
+    public void Clear()
+    {
+        _operandStack.Clear();
+        _undoStack.Clear();
+    }
+
+    public void Undo()
+    {
+        if (_undoStack.TryPop(out var topCommand))
+        {
+            topCommand.Undo(this);
+        }
+    }
+
+    public void Undo(List<OperateNumber> data)
+    {
+        _operandStack.Pop();
+
+        if (data.Count > 0)
+        {
+            _operandStack.Push(data.Last());
         }
     }
 

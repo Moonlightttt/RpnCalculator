@@ -7,6 +7,6 @@ public class ClearCommand : INonComputeCommand
 {
     public void Execute(Calculator calculator)
     {
-        throw new NotImplementedException();
+        calculator.Clear();
     }
 }

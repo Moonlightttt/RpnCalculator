@@ -1,6 +1,4 @@
-﻿using RpnCalculator.Core.Operators;
-
-namespace RpnCalculator.Core.Commands;
+﻿namespace RpnCalculator.Core.Commands;
 
 /// <summary>
 /// 除法命令
@@ -19,11 +17,11 @@ public class DivisionCommand:OperateSymbol,IComputeCommand
 
     public void Execute(Calculator calculator)
     {
-        calculator.CommandExecute(OperandCount, Evaluate);
+        calculator.CommandExecute(this, OperandCount, Evaluate);
     }
 
     public void Undo(Calculator calculator)
     {
-        throw new NotImplementedException();
+        calculator.Undo(UndoList);
     }
 }

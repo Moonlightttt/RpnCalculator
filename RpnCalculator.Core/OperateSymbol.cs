@@ -21,6 +21,11 @@ public abstract class OperateSymbol
     /// 运算符位置
     /// </summary>
     public int Position { get; protected set; }
+    
+    /// <summary>
+    /// 撤销记录
+    /// </summary>
+    public List<OperateNumber> UndoList { get; set; }
 
     /// <summary>
     /// 构造函数
@@ -38,9 +43,11 @@ public abstract class OperateSymbol
     /// </summary>
     /// <param name="operands"></param>
     /// <returns></returns>
-    public decimal Evaluate(List<OperateNumber> operands)
+    protected decimal Evaluate(List<OperateNumber> operands)
     {
         Validate(operands);
+        
+        UndoList = operands;
 
         return InternalEvaluate(operands);
     }

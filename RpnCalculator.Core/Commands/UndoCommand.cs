@@ -7,6 +7,6 @@ public class UndoCommand:INonComputeCommand
 {
     public void Execute(Calculator calculator)
     {
-        throw new NotImplementedException();
+        calculator.Undo();
     }
 }

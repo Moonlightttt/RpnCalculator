@@ -18,11 +18,11 @@ public class MultiplicationCommand : OperateSymbol, IComputeCommand
 
     public void Execute(Calculator calculator)
     {
-        calculator.CommandExecute(OperandCount, Evaluate);
+        calculator.CommandExecute(this, OperandCount, Evaluate);
     }
 
     public void Undo(Calculator calculator)
     {
-        throw new NotImplementedException();
+        calculator.Undo(UndoList);
     }
 }
