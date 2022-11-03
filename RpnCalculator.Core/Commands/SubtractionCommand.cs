@@ -10,7 +10,6 @@ public class SubtractionCommand : OperateSymbol
         OperandCount = 2;
     }
 
-
     protected override decimal ImplementedEvaluate(List<OperateNumber> operands)
     {
         return operands[1].Value - operands[0].Value;

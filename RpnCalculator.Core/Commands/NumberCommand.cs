@@ -9,11 +9,7 @@ public class NumberCommand : OperateNumber, IComputeCommand
     {
     }
 
-    public NumberCommand(decimal value) : base(value)
-    {
-    }
-
-    public void Execute(Calculator calculator)
+    public void Execute(Calculator calculator) 
     {
         calculator.SetNumber(this);
     }
