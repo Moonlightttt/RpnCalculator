@@ -7,11 +7,11 @@ public class SubtractionCommand : OperateSymbol
 {
     public SubtractionCommand(string value, int position) : base(value, position)
     {
-        OperandCount = 2;
+        RequiredOperands = 2;
     }
 
-    protected override decimal ImplementedEvaluate(List<OperateNumber> numbers)
+    protected override decimal ImplementedEvaluate(Stack<OperateNumber> stack)
     {
-        return numbers[1].Value - numbers[0].Value;
+        return stack.Pop().Value - stack.Pop().Value;
     }
 }

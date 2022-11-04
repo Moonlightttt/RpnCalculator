@@ -8,7 +8,7 @@ namespace RpnCalculator.Core;
 /// </summary>
 public class Calculator
 {
-    private Stack<OperateNumber> _operandStack = new Stack<OperateNumber>();
+    private Stack<OperateNumber> _dataStack = new Stack<OperateNumber>();
     private Stack<IComputeCommand> _undoStack = new Stack<IComputeCommand>();
 
     /// <summary>
@@ -20,27 +20,72 @@ public class Calculator
 
     public string Evaluate(string input)
     {
-        var inputData = input.Resolve();
-
-        foreach (var command in inputData)
+        try
         {
-            command.Execute(this);
-        }
+            var inputData = input.Resolve();
 
-        return this.ToString();
+            foreach (var command in inputData)
+            {
+                command.Execute(this);
+            }
+
+            return $"buffer: {this}";
+        }
+        catch (InsufficientException e)
+        {
+            return $"{e}{Environment.NewLine}buffer: {this}";
+        }
+        catch (UnexpectedException e)
+        {
+            return $"{e}{Environment.NewLine}buffer: {this}";
+        }
     }
 
-    public void CommandExecute(IComputeCommand command, int operateCount, Func<List<OperateNumber>, decimal> func)
+    /// <summary>
+    /// 执行计算命令
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="requiredOperands"></param>
+    /// <param name="func"></param>
+    public void CommandExecute(IComputeCommand command, int requiredOperands, Func<Stack<OperateNumber>, decimal> func)
     {
-        var currentList = new List<OperateNumber>();
+        var evaluationStack = GetEvaluationStack(requiredOperands);
 
-        while (operateCount > 0)
+        try
         {
-            if (_operandStack.TryPop(out var topOperand))
-            {
-                currentList.Add(topOperand);
+            var result = func(evaluationStack);
 
-                operateCount--;
+            _dataStack.Push(new OperateNumber(result));
+
+            _undoStack.Push(command);
+        }
+        catch (InsufficientException)
+        {
+            while (evaluationStack.TryPop(out var topNumber))
+            {
+                _dataStack.Push(topNumber);
+            }
+
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// 获取当前计算栈
+    /// </summary>
+    /// <param name="requiredOperands"></param>
+    /// <returns></returns>
+    private Stack<OperateNumber> GetEvaluationStack(int requiredOperands)
+    {
+        var evaluationStack = new Stack<OperateNumber>();
+
+        while (requiredOperands > 0)
+        {
+            if (_dataStack.TryPop(out var topOperand))
+            {
+                evaluationStack.Push(topOperand);
+
+                requiredOperands--;
             }
             else
             {
@@ -48,37 +93,31 @@ public class Calculator
             }
         }
 
-        try
-        {
-            var result = func(currentList);
-
-            _operandStack.Push(new OperateNumber(result));
-
-            _undoStack.Push(command);
-        }
-        catch (InsufficientException)
-        {
-            for (var i = currentList.Count - 1; i >= 0; i--)
-            {
-                _operandStack.Push(currentList[i]);
-            }
-
-            throw;
-        }
+        return evaluationStack;
     }
 
+    /// <summary>
+    /// 设置数据
+    /// </summary>
+    /// <param name="number"></param>
     public void SetNumber(NumberCommand number)
     {
-        _operandStack.Push(number);
+        _dataStack.Push(number);
         _undoStack.Push(number);
     }
 
+    /// <summary>
+    /// 执行清理命令
+    /// </summary>
     public void Clear()
     {
-        _operandStack.Clear();
+        _dataStack.Clear();
         _undoStack.Clear();
     }
 
+    /// <summary>
+    /// 执行撤销命令
+    /// </summary>
     public void Undo()
     {
         if (_undoStack.TryPop(out var topCommand))
@@ -87,18 +126,26 @@ public class Calculator
         }
     }
 
-    public void Undo(List<OperateNumber> data)
+    /// <summary>
+    /// 处理撤销逻辑
+    /// </summary>
+    /// <param name="store"></param>
+    public void Undo(List<OperateNumber> store)
     {
-        _operandStack.Pop();
+        _dataStack.Pop();
 
-        if (data.Count > 0)
+        if (store.Count > 0)
         {
-            _operandStack.Push(data.Last());
+            _dataStack.Push(store.First());
         }
     }
 
+    /// <summary>
+    /// 获取当前数据的字符串表示
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
-        return string.Join(" ", _operandStack.Select(x => x.ToString()).Reverse());
+        return string.Join(" ", _dataStack.Select(x => x.ToString()).Reverse());
     }
 }
