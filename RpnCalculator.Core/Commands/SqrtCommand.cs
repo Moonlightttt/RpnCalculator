@@ -7,12 +7,12 @@ public class SqrtCommand : OperateSymbol
 {
     public SqrtCommand(string value, int position) : base(value, position)
     {
-        OperandCount = 1;
+        RequiredOperands = 1;
     }
 
-    protected override decimal ImplementedEvaluate(List<OperateNumber> numbers)
+    protected override decimal ImplementedEvaluate(List<OperateNumber> operands)
     {
-        return (decimal)Math.Sqrt((double)numbers[0].Value);
+        return (decimal)Math.Sqrt((double)operands[0].Value);
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class SqrtCommand : OperateSymbol
 
         if (numbers[0].Value < 0)
         {
-            throw new ArgumentException();
+            throw new ArithmeticException("负数无法计算平方根");
         }
     }
 }
