@@ -95,14 +95,6 @@ public class CalculatorTest
     }
 
     [Fact]
-    public void DivisionZeroShouldFail()
-    {
-        var calculator = new Calculator();
-
-        Should.Throw<DivideByZeroException>(() => calculator.Evaluate("1 0 /"));
-    }
-
-    [Fact]
     public void OperatorShouldShowInsufficient()
     {
         var calculator = new Calculator();
@@ -127,7 +119,7 @@ public class CalculatorTest
 
         result.ShouldBe(output);
     }
-    
+
     [Fact(DisplayName = "连续输入")]
     public void ContinuousInputShouldSuccess()
     {
@@ -136,20 +128,20 @@ public class CalculatorTest
         var result = calculator.Evaluate("6 5 4 3");
 
         result.ShouldBe("buffer: 6 5 4 3");
-        
+
         result = calculator.Evaluate("undo undo *");
 
         result.ShouldBe("buffer: 30");
-        
+
         result = calculator.Evaluate("10 *");
 
         result.ShouldBe("buffer: 300");
-        
+
         result = calculator.Evaluate("undo");
 
         result.ShouldBe("buffer: 30");
     }
-    
+
     [Theory(DisplayName = "清理")]
     [InlineData("1 2 clear", "buffer: ")]
     [InlineData("1 2 clear 3 4", "buffer: 3 4")]
@@ -161,7 +153,7 @@ public class CalculatorTest
 
         result.ShouldBe(output);
     }
-    
+
     [Theory(DisplayName = "撤销")]
     [InlineData("1 2 undo", "buffer: 1")]
     [InlineData("1 2 undo 3 4", "buffer: 1 3 4")]
@@ -174,5 +166,24 @@ public class CalculatorTest
         var result = calculator.Evaluate(input);
 
         result.ShouldBe(output);
+    }
+
+    [Fact(DisplayName = "算术溢出")]
+    public void ArithmeticOverflowShouldFail()
+    {
+        var calculator = new Calculator();
+
+        var result = calculator.Evaluate($"{decimal.MaxValue} {decimal.MaxValue} *");
+
+        result.ShouldBe($"Value was either too large or too small for a Decimal.{Environment.NewLine}buffer: {decimal.MaxValue} {decimal.MaxValue}");
+    }
+
+    [Fact]
+    public void DivisionZeroShouldFail()
+    {
+        var calculator = new Calculator();
+
+        var result=calculator.Evaluate("1 0 /");
+        result.ShouldBe($"Attempted to divide by zero.{Environment.NewLine}buffer: 1 0");
     }
 }

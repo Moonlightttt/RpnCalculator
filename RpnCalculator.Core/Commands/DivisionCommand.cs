@@ -10,8 +10,8 @@ public class DivisionCommand:OperateSymbol
         RequiredOperands = 2;
     }
 
-    protected override decimal ImplementedEvaluate(Stack<OperateNumber> stack)
+    protected override decimal ImplementedEvaluate(List<OperateNumber> operands)
     {
-        return stack.Pop().Value / stack.Pop().Value;
+        return operands[1].Value / operands[0].Value;
     }
 }

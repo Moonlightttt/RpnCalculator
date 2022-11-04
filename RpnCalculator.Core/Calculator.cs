@@ -31,13 +31,13 @@ public class Calculator
 
             return $"buffer: {this}";
         }
-        catch (InsufficientException e)
+        catch (Exception e) when (e is InsufficientException or UnexpectedException)
         {
             return $"{e}{Environment.NewLine}buffer: {this}";
         }
-        catch (UnexpectedException e)
+        catch (Exception e) when (e is ArithmeticException)
         {
-            return $"{e}{Environment.NewLine}buffer: {this}";
+            return $"{e.Message}{Environment.NewLine}buffer: {this}";
         }
     }
 
@@ -47,23 +47,23 @@ public class Calculator
     /// <param name="command"></param>
     /// <param name="requiredOperands"></param>
     /// <param name="func"></param>
-    public void CommandExecute(IComputeCommand command, int requiredOperands, Func<Stack<OperateNumber>, decimal> func)
+    public void CommandExecute(IComputeCommand command, int requiredOperands, Func<List<OperateNumber>, decimal> func)
     {
-        var evaluationStack = GetEvaluationStack(requiredOperands);
+        var evaluationOperands = GetEvaluationOperands(requiredOperands);
 
         try
         {
-            var result = func(evaluationStack);
+            var result = func(evaluationOperands);
 
             _dataStack.Push(new OperateNumber(result));
 
             _undoStack.Push(command);
         }
-        catch (InsufficientException)
+        catch (Exception e) when (e is InsufficientException or ArithmeticException)
         {
-            while (evaluationStack.TryPop(out var topNumber))
+            for (var i = evaluationOperands.Count - 1; i >= 0; i--)
             {
-                _dataStack.Push(topNumber);
+                _dataStack.Push(evaluationOperands[i]);
             }
 
             throw;
@@ -71,19 +71,19 @@ public class Calculator
     }
 
     /// <summary>
-    /// 获取当前计算栈
+    /// 获取当前操作数
     /// </summary>
     /// <param name="requiredOperands"></param>
     /// <returns></returns>
-    private Stack<OperateNumber> GetEvaluationStack(int requiredOperands)
+    private List<OperateNumber> GetEvaluationOperands(int requiredOperands)
     {
-        var evaluationStack = new Stack<OperateNumber>();
+        var evaluationOperands = new List<OperateNumber>();
 
         while (requiredOperands > 0)
         {
             if (_dataStack.TryPop(out var topOperand))
             {
-                evaluationStack.Push(topOperand);
+                evaluationOperands.Add(topOperand);
 
                 requiredOperands--;
             }
@@ -93,7 +93,7 @@ public class Calculator
             }
         }
 
-        return evaluationStack;
+        return evaluationOperands;
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public class Calculator
 
         if (store.Count > 0)
         {
-            _dataStack.Push(store.First());
+            _dataStack.Push(store.Last());
         }
     }
 
