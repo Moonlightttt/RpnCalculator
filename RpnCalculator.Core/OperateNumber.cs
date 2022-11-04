@@ -1,4 +1,6 @@
-﻿namespace RpnCalculator.Core;
+﻿using RpnCalculator.Core.Exceptions;
+
+namespace RpnCalculator.Core;
 
 /// <summary>
 /// 操作数
@@ -14,7 +16,7 @@ public class OperateNumber
     {
         Value = decimal.TryParse(value, out var result)
             ? result
-            : throw new ArgumentException($"unexpected string: {value}");
+            : throw new UnexpectedException(value);
     }
 
     public OperateNumber(decimal value)

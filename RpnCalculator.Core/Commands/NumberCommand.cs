@@ -1,4 +1,6 @@
-﻿namespace RpnCalculator.Core.Commands;
+﻿using System.Collections;
+
+namespace RpnCalculator.Core.Commands;
 
 /// <summary>
 /// 数字压入栈命令
@@ -9,7 +11,7 @@ public class NumberCommand : OperateNumber, IComputeCommand
     {
     }
 
-    public void Execute(Calculator calculator) 
+    public void Execute(Calculator calculator)
     {
         calculator.SetNumber(this);
     }

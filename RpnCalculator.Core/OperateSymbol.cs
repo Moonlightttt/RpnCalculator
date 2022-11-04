@@ -6,7 +6,7 @@ namespace RpnCalculator.Core;
 /// <summary>
 /// 运算符基类
 /// </summary>
-public abstract class OperateSymbol:IComputeCommand
+public abstract class OperateSymbol : IComputeCommand
 {
     /// <summary>
     /// 运算符
@@ -16,7 +16,7 @@ public abstract class OperateSymbol:IComputeCommand
     /// <summary>
     /// 运算符所需操作数的个数
     /// </summary>
-    protected int OperandCount { get; set; }
+    protected int RequiredOperands { get; set; }
 
     /// <summary>
     /// 运算符位置
@@ -26,7 +26,7 @@ public abstract class OperateSymbol:IComputeCommand
     /// <summary>
     /// 撤销记录
     /// </summary>
-    private List<OperateNumber> UndoList { get; set; } = new();
+    private List<OperateNumber> UndoStore { get; set; } = new();
 
     /// <summary>
     /// 构造函数
@@ -38,36 +38,36 @@ public abstract class OperateSymbol:IComputeCommand
         Value = value;
         Position = position;
     }
-    
+
     /// <summary>
     /// 通用计算逻辑
     /// </summary>
-    /// <param name="numbers"></param>
+    /// <param name="operands"></param>
     /// <returns></returns>
-    private decimal CommonEvaluate(List<OperateNumber> numbers)
+    private decimal CommonEvaluate(List<OperateNumber> operands)
     {
-        Validate(numbers);
-        
-        UndoList = numbers;
+        Validate(operands);
 
-        return ImplementedEvaluate(numbers);
+        UndoStore = operands;
+
+        return ImplementedEvaluate(operands);
     }
 
     /// <summary>
     /// 计算实现
     /// </summary>
-    /// <param name="numbers"></param>
+    /// <param name="operands"></param>
     /// <returns></returns>
-    protected abstract decimal ImplementedEvaluate(List<OperateNumber> numbers);
+    protected abstract decimal ImplementedEvaluate(List<OperateNumber> operands);
 
     /// <summary>
     /// 验证
     /// </summary>
-    /// <param name="numbers"></param>
+    /// <param name="stack"></param>
     /// <returns></returns>
-    protected virtual void Validate(List<OperateNumber> numbers)
+    protected virtual void Validate(List<OperateNumber> stack)
     {
-        if (numbers.Count != OperandCount)
+        if (stack.Count != RequiredOperands)
         {
             throw new InsufficientException(this);
         }
@@ -79,7 +79,7 @@ public abstract class OperateSymbol:IComputeCommand
     /// <param name="calculator"></param>
     public void Execute(Calculator calculator)
     {
-        calculator.CommandExecute(this, OperandCount, CommonEvaluate);
+        calculator.CommandExecute(this, RequiredOperands, CommonEvaluate);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public abstract class OperateSymbol:IComputeCommand
     /// <param name="calculator"></param>
     public void Undo(Calculator calculator)
     {
-        calculator.Undo(UndoList);
+        calculator.Undo(UndoStore);
     }
 
     public override string ToString()
