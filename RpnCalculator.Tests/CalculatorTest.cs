@@ -189,6 +189,7 @@ public class CalculatorTest
     [InlineData("1 2 undo 3 4", "buffer: 1 3 4")]
     [InlineData("1 2 * undo", "buffer: 1")]
     [InlineData("1 2 * undo 3 4 undo", "buffer: 1 3")]
+    [InlineData("1 2 3 4 5 6 7 + - * / undo", "buffer: 1 2 3")]
     public void UndoShouldSuccess(string input, string output)
     {
         var calculator = new Calculator();
