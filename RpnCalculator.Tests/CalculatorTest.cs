@@ -141,6 +141,36 @@ public class CalculatorTest
 
         result.ShouldBe("buffer: 30");
     }
+    
+    [Fact(DisplayName = "连续输入2")]
+    public void ContinuousInput2ShouldSuccess()
+    {
+        var calculator = new Calculator();
+
+        var result = calculator.Evaluate("1 2 3 4 5");
+        
+        result.ShouldBe("buffer: 1 2 3 4 5");
+
+        result = calculator.Evaluate("+");
+        
+        result.ShouldBe("buffer: 1 2 3 9");
+
+        result = calculator.Evaluate("+");
+        
+        result.ShouldBe("buffer: 1 2 12");
+        
+        result = calculator.Evaluate("+");
+        
+        result.ShouldBe("buffer: 1 14");
+        
+        result = calculator.Evaluate("undo");
+
+        result.ShouldBe("buffer: 1 2");
+        
+        result = calculator.Evaluate("undo");
+
+        result.ShouldBe("buffer: 1");
+    }
 
     [Theory(DisplayName = "清理")]
     [InlineData("1 2 clear", "buffer: ")]

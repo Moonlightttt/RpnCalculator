@@ -16,7 +16,7 @@ public abstract class OperateSymbol : IComputeCommand
     /// <summary>
     /// 运算符所需操作数的个数
     /// </summary>
-    protected int RequiredOperands { get; set; }
+    public int RequiredOperands { get; protected set; }
 
     /// <summary>
     /// 运算符位置

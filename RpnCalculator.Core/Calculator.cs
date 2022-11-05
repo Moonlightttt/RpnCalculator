@@ -10,6 +10,7 @@ public class Calculator
 {
     private Stack<OperateNumber> _dataStack = new Stack<OperateNumber>();
     private Stack<IComputeCommand> _undoStack = new Stack<IComputeCommand>();
+    private int _undoNumberCount = 0;
 
     /// <summary>
     /// 构造函数
@@ -123,7 +124,35 @@ public class Calculator
         if (_undoStack.TryPop(out var topCommand))
         {
             topCommand.Undo(this);
+
+            if (topCommand is not NumberCommand)
+            {
+                var os = topCommand as OperateSymbol;
+                _undoNumberCount += (os!.RequiredOperands - 1);
+
+                this.Undo();
+            }
+            else
+            {
+                _undoNumberCount--;
+                
+                if (_undoNumberCount <= 0)
+                {
+                    return;
+                }
+
+                this.Undo();
+            }
         }
+    }
+
+
+    /// <summary>
+    /// 重置撤销计数器
+    /// </summary>
+    public void ResetUndoCount()
+    {
+        _undoNumberCount = 0;
     }
 
     /// <summary>
@@ -136,7 +165,10 @@ public class Calculator
 
         if (store.Count > 0)
         {
-            _dataStack.Push(store.Last());
+            for (int i = store.Count - 1; i >= 0; i--)
+            {
+                _dataStack.Push(store[i]);
+            }
         }
     }
 
