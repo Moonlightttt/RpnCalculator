@@ -7,6 +7,7 @@ public class UndoCommand:INonComputeCommand
 {
     public void Execute(Calculator calculator)
     {
+        calculator.ResetUndoCount();
         calculator.Undo();
     }
 }
