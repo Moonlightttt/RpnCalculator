@@ -7,7 +7,7 @@ namespace RpnCalculator.Tests;
 
 public class CalculatorTest
 {
-    [Theory(DisplayName = "加法计算成功")]
+    [Theory(DisplayName = "加法计算")]
     [InlineData("1 2 +", "buffer: 3")]
     [InlineData("1 2 + 3 4 +", "buffer: 3 7")]
     [InlineData("1 2 + 3 + 4 +", "buffer: 10")]
@@ -29,7 +29,7 @@ public class CalculatorTest
         result.ShouldBe(output);
     }
 
-    [Theory(DisplayName = "减法计算成功")]
+    [Theory(DisplayName = "减法计算")]
     [InlineData("1 2 -", "buffer: -1")]
     [InlineData("1 2 - 3 4 -", "buffer: -1 -1")]
     [InlineData("1 2 - 3 - 4 -", "buffer: -8")]
@@ -51,7 +51,7 @@ public class CalculatorTest
         result.ShouldBe(output);
     }
 
-    [Theory(DisplayName = "乘法计算成功")]
+    [Theory(DisplayName = "乘法计算")]
     [InlineData("1 2 *", "buffer: 2")]
     [InlineData("1 2 * 3 4 *", "buffer: 2 12")]
     [InlineData("1 2 * 3 * 4 *", "buffer: 24")]
@@ -73,7 +73,7 @@ public class CalculatorTest
         result.ShouldBe(output);
     }
 
-    [Theory(DisplayName = "除法计算成功")]
+    [Theory(DisplayName = "除法计算")]
     [InlineData("1 2 /", "buffer: 0.5")]
     [InlineData("1 2 / 3 4 /", "buffer: 0.5 0.75")]
     [InlineData("1 2 / 3 / 4 /", "buffer: 0.0416666667")]
@@ -94,7 +94,7 @@ public class CalculatorTest
         result.ShouldBe(output);
     }
 
-    [Fact]
+    [Fact(DisplayName = "操作数不足")]
     public void OperatorShouldShowInsufficient()
     {
         var calculator = new Calculator();
@@ -178,12 +178,23 @@ public class CalculatorTest
         result.ShouldBe($"Value was either too large or too small for a Decimal.{Environment.NewLine}buffer: {decimal.MaxValue} {decimal.MaxValue}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "除以零")]
     public void DivisionZeroShouldFail()
     {
         var calculator = new Calculator();
 
         var result=calculator.Evaluate("1 0 /");
+        
         result.ShouldBe($"Attempted to divide by zero.{Environment.NewLine}buffer: 1 0");
+    }
+
+    [Fact(DisplayName = "预期外字符")]
+    public void UnexpectedStringShouldFail()
+    {
+        var calculator = new Calculator();
+
+        var result=calculator.Evaluate("1 0 / a");
+        
+        result.ShouldBe($"unexpected string: a{Environment.NewLine}buffer: ");
     }
 }
