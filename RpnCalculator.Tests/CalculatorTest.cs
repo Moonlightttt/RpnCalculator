@@ -227,5 +227,9 @@ public class CalculatorTest
         var result=calculator.Evaluate("1 0 / a");
         
         result.ShouldBe($"unexpected string: a{Environment.NewLine}buffer: ");
+        
+        result=calculator.Evaluate("clear 1 2 / 888-");
+        
+        result.ShouldBe($"unexpected string: 888-{Environment.NewLine}buffer: ");
     }
 }

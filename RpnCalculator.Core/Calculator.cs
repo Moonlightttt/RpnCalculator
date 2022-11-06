@@ -19,6 +19,11 @@ public class Calculator
     {
     }
 
+    /// <summary>
+    /// 解析字符串并计算
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public string Evaluate(string input)
     {
         try

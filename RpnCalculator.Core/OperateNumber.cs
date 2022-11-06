@@ -14,6 +14,11 @@ public class OperateNumber
 
     protected OperateNumber(string value)
     {
+        if (value.EndsWith("+") || value.EndsWith("-"))
+        {
+            throw new UnexpectedException(value);
+        }
+
         Value = decimal.TryParse(value, out var result)
             ? result
             : throw new UnexpectedException(value);
